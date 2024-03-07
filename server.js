@@ -4,6 +4,7 @@ const path = require('path');
 const app = express();
 const PORT = 3001
 const notes = require('./db/db.json')
+const uuid = require('./helpers/uuid.js')
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -28,7 +29,7 @@ app.post('/api/notes', (req, res) => {
         const newNote = {
             title,
             text,
-            // id: uuid(),
+            id: uuid(),
         }
         // const noteString = JSON.stringify(newNote);
         fs.readFile('db/db.json', function (err, data){
@@ -53,6 +54,20 @@ app.post('/api/notes', (req, res) => {
     } else {
         res.status(500).json('Error in posting note');
     }
+});
+
+// DELETE request
+app.delete('/api/notes/:id', (req, res) => {
+    res.send('DELETE request received')
+    fs.readFile('db/db.json', function (err, data){
+        if (err) {
+            console.error(err);
+            return;
+        }
+        let json = JSON.parse(data);
+        json = json.filter(note => note.id !==req.params.id);
+        fs.writeFile('db/db.json', JSON.stringify(json), (err) => err ? console.log(err) : console.log('note deleted'))
+    })
 });
 
 app.listen(PORT, () =>
