@@ -19,7 +19,15 @@ app.get('/notes', (req, res) => {
 
 // GET api request for db.json
 app.get('/api/notes', (req, res) => {
-    res.json(notes)
+    fs.readFile('db/db.json', function (err, data){
+        if (err) {
+            console.error(err);
+            return;
+        }
+        const notes = JSON.parse(data);
+        res.send(notes)
+        })
+        
 });
 
 // POST request for new notes
